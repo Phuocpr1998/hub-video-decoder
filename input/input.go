@@ -21,7 +21,6 @@ const (
 	AV_CODEC_ID_MPEG1VIDEO = C.AV_CODEC_ID_MPEG1VIDEO
 )
 
-
 /*
 Read frame add to queue
 */
@@ -125,22 +124,23 @@ func (si *StreamInput) setupInput() error {
 	glog.Info("Done input open")
 
 	// find video decoder
-	for i := uint(0); i < si.ctx.inFmtCtx.NumberOfStreams(); i++ {
-
-		inStream := si.ctx.inFmtCtx.Streams()[i]
-		// Skip all others frame type
-		if inStream.CodecContext().CodecType() != avutil.MediaTypeVideo {
-			continue
+	codec := avcodec.FindDecoderByID(C.AV_CODEC_ID_MPEG1VIDEO)
+	if codec == nil {
+		glog.Info("Failed to find codec")
+	} else {
+		codeCtx, err := avcodec.NewContextWithCodec(codec)
+		if err != nil {
+			glog.Info("Failed to allocate video codec")
+		} else {
+			err := codeCtx.OpenWithCodec(codec, nil)
+			if err != nil {
+				glog.Info("Cannot open codec")
+			} else {
+				si.ctx.InCodecCtx = codeCtx
+				glog.Info("Done to open decoder")
+			}
 		}
-
-		si.ctx.Index = i
-		si.ctx.InCodecCtx = inStream.CodecContext()
 	}
-	if si.ctx.InCodecCtx == nil{
-		glog.Error("Failed to open decoder")
-		return errors.New("Failed to open decoder")
-	}
-	glog.Info("Done to open decoder")
 
 	si.init = true
 	si.idle = false
