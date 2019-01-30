@@ -17,10 +17,6 @@ const (
 	ControlInputQuit = 0
 )
 
-const (
-	AV_CODEC_ID_MPEG1VIDEO = C.AV_CODEC_ID_MPEG1VIDEO
-)
-
 /*
 Read frame add to queue
 */
