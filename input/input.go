@@ -124,7 +124,7 @@ func (si *StreamInput) setupInput() error {
 	glog.Info("Done input open")
 
 	// find video decoder
-	codec := avcodec.FindDecoderByID(C.AV_CODEC_ID_MPEG1VIDEO)
+	codec := avcodec.FindDecoderByID(si.ctx.inFmtCtx.Streams()[0].CodecContext().CodecID())
 	if codec == nil {
 		glog.Info("Failed to find codec")
 	} else {
