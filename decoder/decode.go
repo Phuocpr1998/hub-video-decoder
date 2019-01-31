@@ -24,7 +24,7 @@ type Decoder struct {
 	ctx *input.StreamContext
 }
 
-func (decoder Decoder) decodeFrame(pkt avcodec.Packet) error {
+func (decoder Decoder) decodeFrame(pkt *avcodec.Packet) error {
 	frame, err := avutil.NewFrame()
 	if err != nil {
 		glog.Error("Cann't allocate frame")
@@ -34,6 +34,7 @@ func (decoder Decoder) decodeFrame(pkt avcodec.Packet) error {
 	gotFrame, _, err := decoder.ctx.InCodecCtx.DecodeVideo(pkt, frame)
 	if err != nil {
 		glog.Error("Error while decoding frame")
+		pkt.Free()
 		return err
 	}
 
@@ -42,5 +43,20 @@ func (decoder Decoder) decodeFrame(pkt avcodec.Packet) error {
 		C.pgm_save(frame.Data(0), frame.LineSize(0), decoder.ctx.InCodecCtx.Width(), decoder.ctx.InCodecCtx.Height())
 	}
 
+	pkt.Free()
 	return nil
+}
+
+func (decoder Decoder) Run() {
+	go func() {
+		for {
+			select {
+			case pkt := <-decoder.ctx.PacketChan:
+				err := decoder.decodeFrame(pkt)
+				if err != nil {
+					glog.Error("Failed to decode frame")
+				}
+			}
+		}
+	}()
 }
