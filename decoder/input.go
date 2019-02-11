@@ -1,7 +1,6 @@
-package input
+package decoder
 
-//#include <libavcodec/avcodec.h>
-import "C"
+
 import (
 	"errors"
 	"github.com/baohavan/go-libav/avcodec"
@@ -176,7 +175,7 @@ func (si *StreamInput) Run() error {
 	//Sometime cause panic if not check index (stream with sound)
 	if si.ctx.Index == index {
 		select {
-		case si.ctx.PacketChan <- packet:
+		case si.ctx.packetChan <- packet:
 			{
 
 			}
@@ -190,20 +189,13 @@ func (si *StreamInput) Run() error {
 		packet.Free()
 		packet = nil
 	}
-	//} else {
-	//glog.Errorf("Input error while opening => Switch to idle")
-	//si.Idle()
-	//si.event <- EventInputError
-	//}
-
-	//glog.Info("Input end process")
 
 	return nil
 }
 
 func (si *StreamInput) openPacketChan() {
 	if !si.ctx.openChan {
-		si.ctx.PacketChan = make(chan *avcodec.Packet, 64)
+		si.ctx.packetChan = make(chan *avcodec.Packet, 64)
 		si.ctx.openChan = true
 	}
 }
@@ -211,8 +203,8 @@ func (si *StreamInput) openPacketChan() {
 func (si *StreamInput) closePacketChan() {
 	if si.ctx.openChan {
 		si.ctx.openChan = false
-		close(si.ctx.PacketChan)
-		si.ctx.PacketChan = nil
+		close(si.ctx.packetChan)
+		si.ctx.packetChan = nil
 	}
 }
 

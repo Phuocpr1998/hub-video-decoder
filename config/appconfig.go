@@ -10,6 +10,8 @@ import (
 	"time"
 )
 
+
+const KakaCamHubAgent = "X-Kakacam-Hub"
 const ConfigFile = "config.json"
 
 const AppVersion = "1.0.1"
@@ -25,6 +27,7 @@ const (
 // App Constant
 const (
 	IdleRetryOpenInput = 15 * time.Second
+	ForceReloadConfigInterval = 3 * 60
 
 	IdleSleep = 3 * time.Second
 )
@@ -60,6 +63,7 @@ func init() {
 type AppConfig struct {
 	Token   string `json:"token"`
 	Agency  string `json:"agency"`
+	Model   string `json:"model"`
 	IntFace string `json:"interface"`
 	Server  string `json:"server"`
 	Serial  string `json:"serial"`

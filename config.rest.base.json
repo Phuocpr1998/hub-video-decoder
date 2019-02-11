@@ -1,0 +1,31 @@
+{
+  "baseConfig": [
+    {
+      "camUuid": "bef860c5-c933-4354-9f76-07029d482e27",
+      "name": "1BkHIS6NTrBNVc3MRaRQZrB5g3A",
+      "input": "rtsp://onvif:Admin123@172.16.0.53:554/cam/realmonitor?channel=1&subtype=1&unicast=true&proto=Onvif"
+    }
+  ],
+  "baseConfig2": [
+    {
+      "camUuid": "bef860c5-c933-4354-9f76-07029d482e27",
+      "name": "1BkHIS6NTrBNVc3MRaRQZrB5g3A",
+      "input": "rtsp://172.16.0.13/MainStream"
+    },
+    {
+      "camUuid": "bef860c5-c933-4354-9f76-07029d482e27",
+      "name": "1BkHIS6NTrBNVc3MRaRQZrB5g3A_sub",
+      "input": "rtsp://172.16.0.13/SubStream"
+    },
+    {
+      "camUuid": "c660e4ed-5445-4cba-9a13-47b37f205051",
+      "name": "1BnAogKRTQQece9n20IRuf2u4nK",
+      "input": "rtsp://192.168.9.100/MainStream"
+    },
+    {
+      "camUuid": "c660e4ed-5445-4cba-9a13-47b37f205051",
+      "name": "1BnAogKRTQQece9n20IRuf2u4nK_sub",
+      "input": "rtsp://192.168.9.100/SubStream"
+    }
+  ]
+}

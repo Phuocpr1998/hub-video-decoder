@@ -1,4 +1,4 @@
-package input
+package decoder
 
 import (
 	"github.com/baohavan/go-libav/avcodec"
@@ -13,6 +13,6 @@ type StreamContext struct {
 	InCodecCtx *avcodec.Context
 
 	Index      uint //Save index of stream video, using for ignore packet from audio stream, which can make crash app( Not open output for audio)
-	PacketChan chan *avcodec.Packet
+	packetChan chan *avcodec.Packet
 	openChan   bool
 }
