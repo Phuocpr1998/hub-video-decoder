@@ -1,16 +1,18 @@
 package decoder
 
 import (
+	"fmt"
 	"github.com/golang/glog"
 	"hub-video-decoder/config"
 	"hub-video-decoder/models"
+	"os"
 	"runtime"
 	"sync"
 	"time"
 )
 
 const (
-	ControlQuit        = 0
+	ControlQuit = 0
 )
 
 type Remuxer struct {
@@ -36,6 +38,11 @@ type Remuxer struct {
 	// For watch dog
 	notOKCount int
 	hangCount  int
+}
+
+func Initialize() error {
+	os.RemoveAll(PathSaveImage)
+	return nil
 }
 
 func (r *Remuxer) Run() error {
@@ -68,8 +75,8 @@ func (r *Remuxer) publish() {
 	defer r.input.Free()
 
 	r.decoder = Decoder{
-		ctx:     &r.Ctx,
-		CamUuid: r.CamUuid,
+		ctx:        &r.Ctx,
+		CamUuid:    r.CamUuid,
 		outputChan: r.outputChan,
 	}
 	r.decoder.Init()
@@ -91,6 +98,12 @@ func (r *Remuxer) publish() {
 
 func (r *Remuxer) processInput() {
 	go func() {
+		storagePath := fmt.Sprintf("%s/%s", PathSaveImage, r.CamUuid)
+		if err := os.MkdirAll(storagePath, os.ModePerm); err != nil {
+			glog.Infof("Failed to create folder %s err: %v ", storagePath, err)
+			return
+		}
+
 		glog.Info("R+: Start process input")
 		defer r.WaitInput.Done()
 		for !r.requestStop {
@@ -186,7 +199,3 @@ func (r *Remuxer) StreamWidth() int {
 func (r *Remuxer) StreamHeight() int {
 	return r.Height
 }
-
-
-
-

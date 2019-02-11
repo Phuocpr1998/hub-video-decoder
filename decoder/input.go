@@ -1,6 +1,5 @@
 package decoder
 
-
 import (
 	"errors"
 	"github.com/baohavan/go-libav/avcodec"
@@ -71,6 +70,8 @@ func (si *StreamInput) Uninitialize() {
 	if si.init {
 		si.ctx.inFmtCtx.CloseInput()
 		si.ctx.inFmtCtx.Free()
+		si.ctx.InCodecCtx.Free()
+		si.ctx.InCodecCtx = nil
 		si.ctx.inFmtCtx = nil
 		si.init = false
 	}

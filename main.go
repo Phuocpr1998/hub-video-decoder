@@ -10,7 +10,7 @@ import (
 	"syscall"
 )
 
-func main()  {
+func main() {
 	flag.Parse()
 	flag.Lookup("logtostderr").Value.Set("true")
 	glog.Info("Hub app start !!!")
@@ -24,6 +24,7 @@ func main()  {
 	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
 	go waitTerminate(sigs, done)
 	<-done
+	decoder.Stop()
 	glog.Info("Hub app finish")
 }
 

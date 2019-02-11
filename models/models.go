@@ -1,13 +1,9 @@
 package models
 
 type BaseConfigInfo struct {
-	CamUuid      string `json:"camUuid"`
-	Name         string `json:"name"`
-	Input        string `json:"input"`
-	InputOpt     string `json:"inputOpt"`
-	Output       string `json:"output"`
-	OutputOpt    string `json:"outputOpt"`
-	TransCodeOpt string `json:"transCodeOpt"`
+	CamUuid string `json:"camUuid"`
+	Name    string `json:"name"`
+	Input   string `json:"input"`
 }
 
 type BaseConfigResponse struct {

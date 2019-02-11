@@ -1,11 +1,14 @@
 package utils
 
 import (
+	"bufio"
+	"encoding/base64"
 	"errors"
 	"github.com/streadway/amqp"
-	"kakacam-hub/config"
+	"hub-video-decoder/config"
 	"math/rand"
 	"net"
+	"os"
 	"strings"
 	"time"
 )
@@ -49,4 +52,29 @@ func DialCluster(connConfig string) (*amqp.Connection, error) {
 	}
 
 	return amqp.Dial(url)
+}
+
+func Base64Encoder(filename string) (string, error) {
+	imgFile, err := os.Open(filename) // open file
+
+	if err != nil {
+		return "", err
+	}
+
+	defer imgFile.Close()
+
+	// create a new buffer base on file size
+	fInfo, _ := imgFile.Stat()
+	var size int64 = fInfo.Size()
+	buf := make([]byte, size)
+
+	// read file content into buffer
+	fReader := bufio.NewReader(imgFile)
+	_, err = fReader.Read(buf)
+	if err != nil {
+		return "", err
+	}
+
+	imgBase64Str := base64.StdEncoding.EncodeToString(buf)
+	return imgBase64Str, nil
 }

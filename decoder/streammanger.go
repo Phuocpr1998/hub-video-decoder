@@ -16,10 +16,10 @@ const (
 )
 
 type StreamManager struct {
-	Remuxers map[string]*Remuxer
+	Remuxers   map[string]*Remuxer
 	LastUpdate time.Time
-	control chan int
-	quit chan int
+	control    chan int
+	quit       chan int
 }
 
 var singleton *StreamManager
@@ -39,6 +39,8 @@ func GetRemuxers() (map[string]*Remuxer, time.Time) {
 
 func Init() error {
 	s := getInstance()
+
+	Initialize()
 
 	s.Remuxers = make(map[string]*Remuxer)
 	s.control = make(chan int, 10)
@@ -88,7 +90,6 @@ func work() {
 	}
 }
 
-
 //Reload all config
 func reload() error {
 	glog.Info("Do reload config")
@@ -106,11 +107,9 @@ func reload() error {
 	return nil
 }
 
-
 func (s *StreamManager) existsStream(stream models.BaseConfigInfo) bool {
 	return s.Remuxers[stream.Name] != nil
 }
-
 
 func (s *StreamManager) addStream(stream models.BaseConfigInfo) {
 	glog.Infof("Add new stream %s, input %s", stream.Name, stream.Input)
@@ -119,7 +118,7 @@ func (s *StreamManager) addStream(stream models.BaseConfigInfo) {
 		Running: false,
 		CamUuid: stream.CamUuid,
 		Ctx: StreamContext{
-			InputFileNameNew:   stream.Input,
+			InputFileNameNew: stream.Input,
 		},
 		RequestStop: false,
 		Name:        stream.Name,
@@ -204,7 +203,7 @@ func (s *StreamManager) checkReloadStreams(Streams []models.BaseConfigInfo) bool
 		}
 	}
 
-	for _ , stream := range removeStreams {
+	for _, stream := range removeStreams {
 		s.removeStream(stream)
 	}
 
@@ -229,7 +228,6 @@ func (p *StreamManager) getAllConfig() ([]models.BaseConfigInfo, error) {
 	return baseInfo, nil
 }
 
-
 func DumpStreamInfo() {
 	s := getInstance()
 	for _, remux := range s.Remuxers {
@@ -241,5 +239,3 @@ func (s *StreamManager) handleBaseChanged(msg string) error {
 	controlReload()
 	return nil
 }
-
-

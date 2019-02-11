@@ -1,40 +1,46 @@
 package decoder
 
 //#include <stdio.h>
-//static void pgm_save(unsigned char *buf, int wrap, int xsize, int ysize)
+//static void pgm_save(unsigned char *buf, int wrap, int xsize, int ysize, char* filename)
 //{
 //    FILE *f;
 //    int i;
 //
-//    f=fopen("ImageTest","w");
-//     fprintf(f,"P5\n%d %d\n%d\n",xsize,ysize,255);
+//    f=fopen(filename,"w");
+//     fprintf(f,"P5\n%d %d\n%d\n",xsize,ysize,125);
 //    for(i=0;i<ysize;i++)
 //         fwrite(buf + i * wrap,1,xsize,f);
 //    fclose(f);
 //}
 import "C"
 import (
+	"fmt"
 	"github.com/baohavan/go-libav/avcodec"
 	"github.com/baohavan/go-libav/avutil"
 	"github.com/golang/glog"
+	"hub-video-decoder/api"
+	"hub-video-decoder/utils"
+	"strconv"
 	"sync"
+	"time"
 )
+
+const PathSaveImage = "/tmp/images"
 
 const (
 	ControlOutputStop = 0
 )
 
 type Decoder struct {
-	ctx 			*StreamContext
-	CamUuid 		string
-	outputChan 		chan int
-	wait       		sync.WaitGroup
+	ctx        *StreamContext
+	CamUuid    string
+	outputChan chan int
+	wait       sync.WaitGroup
 }
 
-func (decoder *Decoder) Init(){
+func (decoder *Decoder) Init() {
 	decoder.wait = sync.WaitGroup{}
 }
-
 
 func (decoder *Decoder) decodeFrame(pkt *avcodec.Packet) error {
 	frame, err := avutil.NewFrame()
@@ -51,9 +57,19 @@ func (decoder *Decoder) decodeFrame(pkt *avcodec.Packet) error {
 	}
 
 	if gotFrame {
-		glog.Info("Save Frame")
-		C.pgm_save((*C.uchar)(frame.Data(0)), (C.int)(frame.LineSize(0)),
-			(C.int)(decoder.ctx.InCodecCtx.Width()), (C.int)(decoder.ctx.InCodecCtx.Height()))
+		go func() {
+			filename := fmt.Sprintf("%s/%s/%s", PathSaveImage, decoder.CamUuid, strconv.Itoa((int)(time.Now().UnixNano())))
+			C.pgm_save((*C.uchar)(frame.Data(0)), (C.int)(frame.LineSize(0)),
+				(C.int)(decoder.ctx.InCodecCtx.Width()), (C.int)(decoder.ctx.InCodecCtx.Height()),
+				(C.CString)(filename))
+
+			stren, err := utils.Base64Encoder(filename)
+			if err != nil {
+				glog.Info(err)
+			} else {
+				api.PostImage(filename, decoder.CamUuid, ([]byte)(stren))
+			}
+		}()
 	}
 
 	pkt.Free()
@@ -90,7 +106,7 @@ func (decoder *Decoder) Run() {
 	}
 }
 
-func (decoder *Decoder) Stop()  {
+func (decoder *Decoder) Stop() {
 	glog.Info("Stopping stream decode")
 	decoder.wait.Add(1)
 	decoder.outputChan <- ControlOutputStop
