@@ -150,6 +150,10 @@ func (r *Remuxer) processOutput() {
 		r.decoder.Sws_Context = swscale.GetSwsContext(r.Ctx.InCodecCtx.Width(),
 			r.Ctx.InCodecCtx.Height(),
 			r.Ctx.InCodecCtx.PixelFormat())
+		if r.decoder.Sws_Context == nil {
+			glog.Info("Cannot get sws context")
+			return
+		}
 
 		glog.Infof("R+: Start process output decode %s", r.Ctx.InputFileName)
 		r.decoder.Run()

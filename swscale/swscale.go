@@ -2,7 +2,7 @@ package swscale
 
 //#include <libavformat/avformat.h>
 //#include <libswscale/swscale.h>
-// #cgo pkg-config: libavutil libavformat libswscale
+// #cgo pkg-config: libavformat libswscale
 import "C"
 import (
 	"github.com/baohavan/go-libav/avutil"
