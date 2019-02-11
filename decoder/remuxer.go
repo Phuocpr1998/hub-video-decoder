@@ -5,6 +5,7 @@ import (
 	"github.com/golang/glog"
 	"hub-video-decoder/config"
 	"hub-video-decoder/models"
+	"hub-video-decoder/swscale"
 	"os"
 	"runtime"
 	"sync"
@@ -146,6 +147,10 @@ func (r *Remuxer) processInput() {
 
 func (r *Remuxer) processOutput() {
 	go func() {
+		r.decoder.Sws_Context = swscale.GetSwsContext(r.Ctx.InCodecCtx.Width(),
+			r.Ctx.InCodecCtx.Height(),
+			r.Ctx.InCodecCtx.PixelFormat())
+
 		glog.Infof("R+: Start process output decode %s", r.Ctx.InputFileName)
 		r.decoder.Run()
 		glog.Infof("R-: Done process output decode %s", r.Ctx.InputFileName)
