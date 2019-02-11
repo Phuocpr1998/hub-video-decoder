@@ -127,14 +127,17 @@ func (si *StreamInput) setupInput() error {
 	codec := avcodec.FindDecoderByID(si.ctx.inFmtCtx.Streams()[0].CodecContext().CodecID())
 	if codec == nil {
 		glog.Info("Failed to find codec")
+		return errors.New("Failed to find codec")
 	} else {
 		codeCtx, err := avcodec.NewContextWithCodec(codec)
 		if err != nil {
 			glog.Info("Failed to allocate video codec")
+			return errors.New("Failed to allocate video codec")
 		} else {
 			err := codeCtx.OpenWithCodec(codec, nil)
 			if err != nil {
 				glog.Info("Cannot open codec")
+				return errors.New("Cannot open codec")
 			} else {
 				si.ctx.InCodecCtx = codeCtx
 				glog.Info("Done to open decoder")
