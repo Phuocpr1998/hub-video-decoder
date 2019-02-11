@@ -15,10 +15,10 @@ type SwsContext struct {
 	CSwsContext *C.struct_SwsContext
 }
 
-func GetSwsContext(width int, heigth int, pix_fmt avutil.PixelFormat) *SwsContext {
+func GetSwsContext(width int, height int, pix_fmt avutil.PixelFormat) *SwsContext {
 	var sContext *C.struct_SwsContext
-	sContext = C.sws_getContext((C.int)(width), (C.int)(heigth), (C.enum_AVPixelFormat)(pix_fmt),
-		(C.int)(width), (C.int)(heigth), CODE_PIX_FMT_RGB24, C.SWS_BILINEAR,
+	sContext = C.sws_getContext((C.int)(width), (C.int)(height), (C.enum_AVPixelFormat)(pix_fmt),
+		(C.int)(width), (C.int)(height), CODE_PIX_FMT_RGB24, C.SWS_BILINEAR,
 		(*C.struct_SwsFilter)(C.NULL), (*C.struct_SwsFilter)(C.NULL), (*C.double)(C.NULL))
 	return &SwsContext{sContext}
 }
