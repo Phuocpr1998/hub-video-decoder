@@ -8,17 +8,12 @@ import (
 	"github.com/baohavan/go-libav/avformat"
 	"github.com/baohavan/go-libav/avutil"
 	"github.com/golang/glog"
-	"kakacam-hub/config"
-	"kakacam-hub/utils"
+	"hub-video-decoder/config"
 	"time"
 )
 
 const (
 	ControlInputQuit = 0
-)
-
-const (
-	AV_CODEC_ID_MPEG1VIDEO = C.AV_CODEC_ID_MPEG1VIDEO
 )
 
 /*
@@ -176,16 +171,12 @@ func (si *StreamInput) Run() error {
 		return errors.New("input.error.reading")
 	}
 
-	if config.GetAppConfig().MemDebug && IsKeyFrame(packet) {
-		utils.PrintMemUsage()
-	}
-
 	index := uint(packet.StreamIndex())
 	//r.index ignore index of stream not type video,
 	//Sometime cause panic if not check index (stream with sound)
 	if si.ctx.Index == index {
 		select {
-		case si.ctx.packetChan <- packet:
+		case si.ctx.PacketChan <- packet:
 			{
 
 			}
@@ -212,7 +203,7 @@ func (si *StreamInput) Run() error {
 
 func (si *StreamInput) openPacketChan() {
 	if !si.ctx.openChan {
-		si.ctx.packetChan = make(chan *avcodec.Packet, 64)
+		si.ctx.PacketChan = make(chan *avcodec.Packet, 64)
 		si.ctx.openChan = true
 	}
 }
@@ -220,8 +211,8 @@ func (si *StreamInput) openPacketChan() {
 func (si *StreamInput) closePacketChan() {
 	if si.ctx.openChan {
 		si.ctx.openChan = false
-		close(si.ctx.packetChan)
-		si.ctx.packetChan = nil
+		close(si.ctx.PacketChan)
+		si.ctx.PacketChan = nil
 	}
 }
 
