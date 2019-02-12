@@ -62,7 +62,7 @@ func (decoder *Decoder) decodeFrame(pkt *avcodec.Packet) error {
 			C.pgm_save((*C.uchar)(frame.Data(0)), (C.int)(frame.LineSize(0)),
 				(C.int)(decoder.ctx.InCodecCtx.Width()), (C.int)(decoder.ctx.InCodecCtx.Height()),
 				(C.CString)(filename))
-
+			frame.Free()
 			stren, err := utils.Base64Encoder(filename)
 			if err != nil {
 				glog.Info(err)
