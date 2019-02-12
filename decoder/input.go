@@ -118,6 +118,15 @@ func (si *StreamInput) setupInput() error {
 
 	glog.Info("Done input open")
 
+	for i := uint(0); i < si.ctx.inFmtCtx.NumberOfStreams(); i++ {
+		inStream := si.ctx.inFmtCtx.Streams()[i]
+		// Skip all others frame type
+		if inStream.CodecContext().CodecType() != avutil.MediaTypeVideo {
+			continue
+		}
+		si.ctx.Index = i
+	}
+
 	// find video decoder
 	codec := avcodec.FindDecoderByID(si.ctx.inFmtCtx.Streams()[0].CodecContext().CodecID())
 	if codec == nil {
