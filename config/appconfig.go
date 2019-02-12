@@ -10,9 +10,8 @@ import (
 	"time"
 )
 
-
 const KakaCamHubAgent = "X-Kakacam-Hub"
-const ConfigFile = "config.json"
+const ConfigFile = "config-test.json"
 
 const AppVersion = "1.0.1"
 
@@ -26,7 +25,7 @@ const (
 
 // App Constant
 const (
-	IdleRetryOpenInput = 15 * time.Second
+	IdleRetryOpenInput        = 15 * time.Second
 	ForceReloadConfigInterval = 3 * 60
 
 	IdleSleep = 3 * time.Second
