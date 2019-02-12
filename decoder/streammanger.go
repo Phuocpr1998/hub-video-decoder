@@ -46,8 +46,6 @@ func Init() error {
 	s.control = make(chan int, 10)
 	s.quit = make(chan int)
 
-	//message.RegisterHandler(message.BaseChange, s.handleBaseChanged)
-
 	go func() {
 		work()
 	}()

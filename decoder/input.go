@@ -114,7 +114,6 @@ func (si *StreamInput) setupInput() error {
 		return errors.New("error find stream")
 	}
 	// dump streams to standard output
-	//si.ctx.inFmtCtx.Dump(0, si.ctx.InputFileName, false)
 
 	glog.Info("Done input open")
 
