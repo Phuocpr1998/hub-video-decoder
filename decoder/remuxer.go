@@ -1,7 +1,10 @@
 package decoder
 
 import (
+	"errors"
 	"fmt"
+	"github.com/baohavan/go-libav/avcodec"
+	"github.com/baohavan/go-libav/avformat"
 	"github.com/golang/glog"
 	"hub-video-decoder/config"
 	"hub-video-decoder/models"
@@ -42,6 +45,8 @@ type Remuxer struct {
 }
 
 func Initialize() error {
+	avformat.RegisterAll()
+	avcodec.RegisterAll()
 	os.RemoveAll(PathSaveImage)
 	return nil
 }
@@ -119,7 +124,10 @@ func (r *Remuxer) processInput() {
 				r.Height = r.Ctx.inFmtCtx.StreamAt(r.Ctx.Index).CodecContext().Height()
 				r.input.openPacketChan()
 
-				r.processOutput()
+				err = r.processOutput()
+				if err != nil {
+					continue
+				}
 
 				glog.Info("Input read frame loop")
 				for !r.requestStop {
@@ -146,20 +154,29 @@ func (r *Remuxer) processInput() {
 	}()
 }
 
-func (r *Remuxer) processOutput() {
-	go func() {
-		r.decoder.Sws_Context = swscale.GetSwsContext(r.Ctx.InCodecCtx.Width(),
-			r.Ctx.InCodecCtx.Height(),
-			r.Ctx.InCodecCtx.PixelFormat())
-		if r.decoder.Sws_Context == nil {
-			glog.Info("Cannot get sws context")
-			return
-		}
+func (r *Remuxer) processOutput() error {
+	if r.Width <= 0 || r.Height <= 0 {
+		glog.Info("Resolution not available", r.Width, "x", r.Height)
+		return errors.New("Resolution not available")
+	} else {
+		glog.Info("Resolution: ", r.Width, "x", r.Height)
+	}
 
+	r.decoder.Sws_Context = swscale.GetSwsContext(r.Width, r.Height, r.Ctx.inFmtCtx.StreamAt(r.Ctx.Index).CodecContext().PixelFormat())
+
+	if r.decoder.Sws_Context.CSwsContext == nil {
+		glog.Info("Cannot get sws context")
+		return errors.New("Cannot get sws context")
+	} else {
+		glog.Info("Get sws context done")
+	}
+
+	go func() {
 		glog.Infof("R+: Start process output decode %s", r.Ctx.InputFileName)
 		r.decoder.Run()
 		glog.Infof("R-: Done process output decode %s", r.Ctx.InputFileName)
 	}()
+	return nil
 }
 
 func (r *Remuxer) Restart() error {

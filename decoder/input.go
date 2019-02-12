@@ -156,8 +156,6 @@ func (si *StreamInput) setupInput() error {
 
 func (si *StreamInput) Run() error {
 	//glog.Info("Input begin process")
-
-	//if err := si.SafeInit(); err == nil {
 	packet, err := avcodec.NewPacket()
 	if err != nil {
 		glog.Errorf("Failed to alloc packet: %v", err)
