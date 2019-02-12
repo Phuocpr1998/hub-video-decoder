@@ -156,8 +156,6 @@ func (si *StreamInput) setupInput() error {
 
 func (si *StreamInput) Run() error {
 	//glog.Info("Input begin process")
-
-	//if err := si.SafeInit(); err == nil {
 	packet, err := avcodec.NewPacket()
 	if err != nil {
 		glog.Errorf("Failed to alloc packet: %v", err)
@@ -183,6 +181,7 @@ func (si *StreamInput) Run() error {
 	//r.index ignore index of stream not type video,
 	//Sometime cause panic if not check index (stream with sound)
 	if si.ctx.Index == index {
+		glog.Info("equals")
 		select {
 		case si.ctx.packetChan <- packet:
 			{
@@ -195,6 +194,7 @@ func (si *StreamInput) Run() error {
 			}
 		}
 	} else {
+		glog.Info("not equals")
 		packet.Free()
 		packet = nil
 	}
