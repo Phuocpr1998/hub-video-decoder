@@ -44,6 +44,11 @@ func (decoder *Decoder) Init() {
 	decoder.wait = sync.WaitGroup{}
 }
 
+func (decoder *Decoder) Free() {
+	decoder.Sws_Context.Free()
+	decoder.Sws_Context = nil
+}
+
 func (decoder *Decoder) decodeFrame(pkt *avcodec.Packet) error {
 	frame, err := avutil.NewFrame()
 	frameRGB, err := avutil.NewFrame()
@@ -70,6 +75,8 @@ func (decoder *Decoder) decodeFrame(pkt *avcodec.Packet) error {
 			C.Save_Frame((*C.uchar)(frameRGB.Data(0)), (C.int)(frameRGB.LineSize(0)),
 				(C.int)(decoder.ctx.InCodecCtx.Width()), (C.int)(decoder.ctx.InCodecCtx.Height()),
 				(C.CString)(filename))
+			frameRGB.Free()
+			frame.Free()
 			stren, err := utils.Base64Encoder(filename)
 			if err != nil {
 				glog.Info(err)

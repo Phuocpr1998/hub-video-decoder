@@ -15,6 +15,12 @@ type SwsContext struct {
 	CSwsContext *C.struct_SwsContext
 }
 
+func (swsctx *SwsContext) Free() {
+	if swsctx.CSwsContext != nil {
+		C.sws_freeContext(&swsctx.CSwsContext)
+	}
+}
+
 func GetSwsContext(width int, height int, pix_fmt avutil.PixelFormat) *SwsContext {
 	var sContext *C.struct_SwsContext
 	sContext = C.sws_getContext((C.int)(width), (C.int)(height), (C.enum_AVPixelFormat)(pix_fmt),

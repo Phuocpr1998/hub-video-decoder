@@ -81,6 +81,7 @@ func (r *Remuxer) publish() {
 		outputChan: r.outputChan,
 	}
 	r.decoder.Init()
+	defer r.decoder.Free()
 
 	r.processInput()
 
