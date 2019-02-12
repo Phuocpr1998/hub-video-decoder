@@ -17,7 +17,7 @@ type SwsContext struct {
 
 func (swsctx *SwsContext) Free() {
 	if swsctx.CSwsContext != nil {
-		C.sws_freeContext(&swsctx.CSwsContext)
+		C.sws_freeContext(swsctx.CSwsContext)
 	}
 }
 
