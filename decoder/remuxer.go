@@ -162,7 +162,7 @@ func (r *Remuxer) processOutput() error {
 		glog.Info("Resolution: ", r.Width, "x", r.Height)
 	}
 
-	r.decoder.Sws_Context = swscale.GetSwsContext(r.Width, r.Height, r.Ctx.InCodecCtx.PixelFormat())
+	r.decoder.Sws_Context = swscale.GetSwsContext(r.Width, r.Height, r.Ctx.inFmtCtx.StreamAt(r.Ctx.Index).CodecContext().PixelFormat())
 
 	if r.decoder.Sws_Context.CSwsContext == nil {
 		glog.Info("Cannot get sws context")
