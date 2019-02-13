@@ -118,7 +118,7 @@ func (r *Remuxer) processInput() {
 			r.Ctx.InputFileName = r.Ctx.InputFileNameNew
 
 			if err := r.input.SafeInit(); err == nil {
-				glog.Infof("Input ready %s => start output", r.Ctx.InputFileName)
+				glog.Infof("Input ready %s => start decode", r.Ctx.InputFileName)
 
 				r.Width = r.Ctx.inFmtCtx.StreamAt(r.Ctx.Index).CodecContext().Width()
 				r.Height = r.Ctx.inFmtCtx.StreamAt(r.Ctx.Index).CodecContext().Height()
@@ -159,6 +159,8 @@ func (r *Remuxer) processOutput() error {
 		glog.Info("Resolution not available", r.Width, "x", r.Height)
 		return errors.New("Resolution not available")
 	} else {
+		r.decoder.Height = r.Height
+		r.decoder.Width = r.Width
 		glog.Info("Resolution: ", r.Width, "x", r.Height)
 	}
 

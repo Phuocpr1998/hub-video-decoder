@@ -60,7 +60,7 @@ func (si *StreamInput) Idle() error {
 	si.Uninitialize()
 	si.idle = true
 
-	glog.Infof("Live idled %s", si.ctx.InputFileName)
+	glog.Infof("Input idled %s", si.ctx.InputFileName)
 
 	return nil
 }
@@ -70,6 +70,7 @@ func (si *StreamInput) Uninitialize() {
 	if si.init {
 		si.ctx.inFmtCtx.CloseInput()
 		si.ctx.inFmtCtx.Free()
+		si.ctx.InCodecCtx.Close()
 		si.ctx.InCodecCtx.Free()
 		si.ctx.InCodecCtx = nil
 		si.ctx.inFmtCtx = nil

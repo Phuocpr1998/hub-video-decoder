@@ -38,6 +38,8 @@ type Decoder struct {
 	CamUuid     string
 	outputChan  chan int
 	wait        sync.WaitGroup
+	Width       int
+	Height      int
 }
 
 func (decoder *Decoder) Init() {
@@ -67,16 +69,19 @@ func (decoder *Decoder) decodeFrame(pkt *avcodec.Packet) error {
 	if gotFrame {
 		go func() {
 			// convert image
-			buffer := swscale.AllocateBuffer(decoder.ctx.InCodecCtx.Width(), decoder.ctx.InCodecCtx.Height())
-			swscale.AVPictureFill(frameRGB, buffer, decoder.ctx.InCodecCtx.Width(), decoder.ctx.InCodecCtx.Height())
-			swscale.Sws_scale(decoder.Sws_Context, frame, frameRGB, decoder.ctx.InCodecCtx.Height())
+			buffer := swscale.AllocateBuffer(decoder.Width, decoder.Height)
+			swscale.AVPictureFill(frameRGB, buffer, decoder.Width, decoder.Height)
+			swscale.Sws_scale(decoder.Sws_Context, frame, frameRGB, decoder.Height)
 
 			filename := fmt.Sprintf("%s/%s/%s", PathSaveImage, decoder.CamUuid, strconv.Itoa((int)(time.Now().UnixNano())))
 			C.Save_Frame((*C.uchar)(frameRGB.Data(0)), (C.int)(frameRGB.LineSize(0)),
-				(C.int)(decoder.ctx.InCodecCtx.Width()), (C.int)(decoder.ctx.InCodecCtx.Height()),
+				(C.int)(decoder.Width), (C.int)(decoder.Height),
 				(C.CString)(filename))
+
 			frameRGB.Free()
 			frame.Free()
+			swscale.FreeBuffer(buffer)
+
 			stren, err := utils.Base64Encoder(filename)
 			if err != nil {
 				glog.Info(err)
