@@ -97,6 +97,7 @@ func (si *StreamInput) setupInput() error {
 	options.Set("fflags", "nobuffer")
 	options.Set("analyzeduration", "1000000")
 	options.Set("probesize", "1000000")
+	options.Set("-c:v", "cedrus264")
 
 	si.ctx.inFmtCtx, _ = avformat.NewContextForInput()
 	//r.inFmtCtx,_ = avformat.NewContextForInput()
