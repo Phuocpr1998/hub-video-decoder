@@ -2,7 +2,9 @@ package swscale
 
 //#include <libavformat/avformat.h>
 //#include <libswscale/swscale.h>
-// #cgo pkg-config: libavformat libswscale
+//#include <libavutil/avutil.h>
+//#include <libavcodec/avcodec.h>
+//#cgo pkg-config: libavformat libswscale libavutil libavcodec
 import "C"
 import (
 	"github.com/baohavan/go-libav/avutil"
@@ -38,8 +40,12 @@ func AllocateBuffer(width int, height int) (buffer unsafe.Pointer) {
 	var numBytes C.int
 	numBytes = C.avpicture_get_size(CODE_PIX_FMT_RGB24, (C.int)(width), (C.int)(height))
 	size := (C.int)(numBytes) * C.sizeof_uint8_t
-	buffer = unsafe.Pointer((*C.uint8_t)(C.av_malloc((C.uint)(size))))
+	buffer = unsafe.Pointer((*C.uint8_t)(C.malloc((C.ulong)(size))))
 	return
+}
+
+func FreeBuffer(buffer unsafe.Pointer) {
+	C.free(buffer)
 }
 
 func Sws_scale(swsContext *SwsContext, pFrame *avutil.Frame, pFrameRGB *avutil.Frame, height int) {

@@ -11,7 +11,7 @@ import (
 )
 
 const KakaCamHubAgent = "X-Kakacam-Hub"
-const ConfigFile = "config-test.json"
+const ConfigFile = "config.json"
 
 const AppVersion = "1.0.1"
 
