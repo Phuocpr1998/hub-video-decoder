@@ -1,0 +1,10 @@
+{
+	"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIxREt2WG9rUExBY0pjSndabDY4QzBKTXV3ZmQiLCJpYXQiOjE1NDI4Nzc2NDcsInByaSI6eyJodWIiOnsibW9kZWwiOiJQQyIsInNlcmlhbCI6IjNlMGZiYTRmZDBhNzI0ODJlOWRiZmEzMDk1Y2ZkMjMxNmM3Y2ZmNWYiLCJhZ2VuY3kiOiJ2Y2MifX19.D9-q1nO6gEXR5pLVQ0_edZLOyTjCidiXvcO2-u8s_hQ",
+	"model": "PC",
+	"agency": "vcc",
+	"interface": "wlxe0b94d1617dd",
+	"server": "http://localhost:12345",
+	"serial": "3e0fba4fd0a72482e9dbfa3095cfd2316c7cff5f",
+	"segmentLength": 30,
+	"run": "dev"
+}
