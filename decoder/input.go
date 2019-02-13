@@ -181,7 +181,6 @@ func (si *StreamInput) Run() error {
 	//r.index ignore index of stream not type video,
 	//Sometime cause panic if not check index (stream with sound)
 	if si.ctx.Index == index {
-		glog.Info("equals")
 		select {
 		case si.ctx.packetChan <- packet:
 			{
@@ -194,7 +193,6 @@ func (si *StreamInput) Run() error {
 			}
 		}
 	} else {
-		glog.Info("not equals")
 		packet.Free()
 		packet = nil
 	}

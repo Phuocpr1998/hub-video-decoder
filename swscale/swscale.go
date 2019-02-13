@@ -38,7 +38,7 @@ func AllocateBuffer(width int, height int) (buffer unsafe.Pointer) {
 	var numBytes C.int
 	numBytes = C.avpicture_get_size(CODE_PIX_FMT_RGB24, (C.int)(width), (C.int)(height))
 	size := (C.int)(numBytes) * C.sizeof_uint8_t
-	buffer = unsafe.Pointer((*C.uint8_t)(C.av_malloc((C.uint)(size))))
+	buffer = unsafe.Pointer((*C.uint8_t)(C.av_malloc((C.ulong)(size))))
 	return
 }
 
