@@ -89,7 +89,9 @@ func (si *StreamInput) Stop() {
 
 func (si *StreamInput) setupInput() error {
 	options := avutil.NewDictionary()
+	optionsDecode := avutil.NewDictionary()
 	defer options.Free()
+	defer optionsDecode.Free()
 
 	options.Set("rtsp_flags", "prefer_tcp")
 	options.Set("max_delay", "1000000")
@@ -97,7 +99,8 @@ func (si *StreamInput) setupInput() error {
 	options.Set("fflags", "nobuffer")
 	options.Set("analyzeduration", "1000000")
 	options.Set("probesize", "1000000")
-	options.Set("-c:v", "cedrus264")
+
+	optionsDecode.Set("-c:v", "cedrus264")
 
 	si.ctx.inFmtCtx, _ = avformat.NewContextForInput()
 	//r.inFmtCtx,_ = avformat.NewContextForInput()
@@ -139,7 +142,7 @@ func (si *StreamInput) setupInput() error {
 			glog.Info("Failed to allocate video codec")
 			return errors.New("Failed to allocate video codec")
 		} else {
-			err := codeCtx.OpenWithCodec(codec, nil)
+			err := codeCtx.OpenWithCodec(codec, optionsDecode)
 			if err != nil {
 				glog.Info("Cannot open codec")
 				return errors.New("Cannot open codec")
