@@ -89,6 +89,9 @@ func (decoder *Decoder) decodeFrame(pkt *avcodec.Packet) error {
 				api.PostImage(filename, decoder.CamUuid, ([]byte)(stren))
 			}
 		}()
+	} else {
+		frameRGB.Free()
+		frame.Free()
 	}
 
 	pkt.Free()
