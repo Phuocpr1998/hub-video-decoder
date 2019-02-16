@@ -33,13 +33,14 @@ const (
 )
 
 type Decoder struct {
-	ctx         *StreamContext
-	Sws_Context *swscale.SwsContext
-	CamUuid     string
-	outputChan  chan int
-	wait        sync.WaitGroup
-	Width       int
-	Height      int
+	ctx              *StreamContext
+	Sws_Context      *swscale.SwsContext
+	hasFirstKeyFrame bool // when has the first key frame, Decoder to start
+	CamUuid          string
+	outputChan       chan int
+	wait             sync.WaitGroup
+	Width            int
+	Height           int
 }
 
 func (decoder *Decoder) Init() {
@@ -103,10 +104,20 @@ func (decoder *Decoder) Run() {
 	for {
 		select {
 		case pkt := <-decoder.ctx.packetChan:
-			err := decoder.decodeFrame(pkt)
-			if err != nil {
-				glog.Error("Failed to decode frame")
+			if !decoder.hasFirstKeyFrame && IsKeyFrame(pkt) {
+				decoder.hasFirstKeyFrame = true
 			}
+
+			if decoder.hasFirstKeyFrame {
+				err := decoder.decodeFrame(pkt)
+				if err != nil {
+					glog.Error("Failed to decode frame")
+				}
+			} else {
+				pkt.Free()
+				pkt = nil
+			}
+
 		case ctl := <-decoder.outputChan:
 			switch ctl {
 			case ControlOutputStop:

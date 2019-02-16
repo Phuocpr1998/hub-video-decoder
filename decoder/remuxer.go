@@ -81,9 +81,10 @@ func (r *Remuxer) publish() {
 	defer r.input.Free()
 
 	r.decoder = Decoder{
-		ctx:        &r.Ctx,
-		CamUuid:    r.CamUuid,
-		outputChan: r.outputChan,
+		ctx:              &r.Ctx,
+		CamUuid:          r.CamUuid,
+		outputChan:       r.outputChan,
+		hasFirstKeyFrame: false,
 	}
 	r.decoder.Init()
 	defer r.decoder.Free()
