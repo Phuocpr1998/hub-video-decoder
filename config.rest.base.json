@@ -3,7 +3,7 @@
     {
       "camUuid": "bef860c5-c933-4354-9f76-07029d482e27",
       "name": "1BkHIS6NTrBNVc3MRaRQZrB5g3A",
-      "input": "rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mov"
+      "input": "rtsp://onvif:Admin123@172.16.0.53:554/cam/realmonitor?channel=1&subtype=1&unicast=true&proto=Onvif"
     }
   ],
   "baseConfig1": [
@@ -15,7 +15,7 @@
     {
       "camUuid": "bef860c5-c933-4354-9f76-07029d482e27",
       "name": "1BkHIS6NTrBNVc3MRaRQZrB5g3A_sub",
-      "input": "rtsp://172.16.0.13/SubStream"
+      "input": "rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mov"
     },
     {
       "camUuid": "c660e4ed-5445-4cba-9a13-47b37f205051",

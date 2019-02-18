@@ -101,11 +101,13 @@ func (decoder *Decoder) decodeFrame(pkt *avcodec.Packet) error {
 
 func (decoder *Decoder) Run() {
 	defer decoder.wait.Done()
+	glog.Info("Wait first key frame")
 	for {
 		select {
 		case pkt := <-decoder.ctx.packetChan:
 			if !decoder.hasFirstKeyFrame && IsKeyFrame(pkt) {
 				decoder.hasFirstKeyFrame = true
+				glog.Info("Has a first key frame")
 			}
 
 			if decoder.hasFirstKeyFrame {
