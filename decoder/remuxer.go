@@ -85,6 +85,7 @@ func (r *Remuxer) publish() {
 		CamUuid:          r.CamUuid,
 		outputChan:       r.outputChan,
 		hasFirstKeyFrame: false,
+		isInit:           false,
 	}
 	r.decoder.Init()
 	defer r.decoder.Free()
@@ -171,6 +172,7 @@ func (r *Remuxer) processOutput() error {
 		glog.Info("Cannot get sws context")
 		return errors.New("Cannot get sws context")
 	} else {
+		r.decoder.isInit = true
 		glog.Info("Get sws context done")
 	}
 
