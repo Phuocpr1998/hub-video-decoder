@@ -109,6 +109,7 @@ func (decoder *Decoder) Run() {
 			if !decoder.hasFirstKeyFrame && IsKeyFrame(pkt) {
 				decoder.hasFirstKeyFrame = true
 				glog.Info("Has a first key frame")
+				glog.Info("Decode start ", decoder.CamUuid)
 			}
 
 			if decoder.hasFirstKeyFrame {
