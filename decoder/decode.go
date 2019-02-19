@@ -41,6 +41,7 @@ type Decoder struct {
 	wait             sync.WaitGroup
 	Width            int
 	Height           int
+	isInit           bool
 }
 
 func (decoder *Decoder) Init() {
@@ -48,8 +49,10 @@ func (decoder *Decoder) Init() {
 }
 
 func (decoder *Decoder) Free() {
-	decoder.Sws_Context.Free()
-	decoder.Sws_Context = nil
+	if decoder.isInit {
+		decoder.Sws_Context.Free()
+		decoder.Sws_Context = nil
+	}
 }
 
 func (decoder *Decoder) decodeFrame(pkt *avcodec.Packet) error {
@@ -68,28 +71,26 @@ func (decoder *Decoder) decodeFrame(pkt *avcodec.Packet) error {
 	}
 
 	if gotFrame {
-		go func() {
-			// convert image
-			buffer := swscale.AllocateBuffer(decoder.Width, decoder.Height)
-			swscale.AVPictureFill(frameRGB, buffer, decoder.Width, decoder.Height)
-			swscale.Sws_scale(decoder.Sws_Context, frame, frameRGB, decoder.Height)
+		// convert image
+		buffer := swscale.AllocateBuffer(decoder.Width, decoder.Height)
+		swscale.AVPictureFill(frameRGB, buffer, decoder.Width, decoder.Height)
+		swscale.Sws_scale(decoder.Sws_Context, frame, frameRGB, decoder.Height)
 
-			filename := fmt.Sprintf("%s/%s/%s", PathSaveImage, decoder.CamUuid, strconv.Itoa((int)(time.Now().UnixNano())))
-			C.Save_Frame((*C.uchar)(frameRGB.Data(0)), (C.int)(frameRGB.LineSize(0)),
-				(C.int)(decoder.Width), (C.int)(decoder.Height),
-				(C.CString)(filename))
+		filename := fmt.Sprintf("%s/%s/%s", PathSaveImage, decoder.CamUuid, strconv.Itoa((int)(time.Now().UnixNano())))
+		C.Save_Frame((*C.uchar)(frameRGB.Data(0)), (C.int)(frameRGB.LineSize(0)),
+			(C.int)(decoder.Width), (C.int)(decoder.Height),
+			(C.CString)(filename))
 
-			frameRGB.Free()
-			frame.Free()
-			swscale.FreeBuffer(buffer)
+		frameRGB.Free()
+		frame.Free()
+		swscale.FreeBuffer(buffer)
 
-			stren, err := utils.Base64Encoder(filename)
-			if err != nil {
-				glog.Info(err)
-			} else {
-				api.PostImage(filename, decoder.CamUuid, ([]byte)(stren))
-			}
-		}()
+		stren, err := utils.Base64Encoder(filename)
+		if err != nil {
+			glog.Info(err)
+		} else {
+			api.PostImage(filename, decoder.CamUuid, ([]byte)(stren))
+		}
 	} else {
 		frameRGB.Free()
 		frame.Free()
@@ -101,11 +102,13 @@ func (decoder *Decoder) decodeFrame(pkt *avcodec.Packet) error {
 
 func (decoder *Decoder) Run() {
 	defer decoder.wait.Done()
+	glog.Info("Wait first key frame")
 	for {
 		select {
 		case pkt := <-decoder.ctx.packetChan:
 			if !decoder.hasFirstKeyFrame && IsKeyFrame(pkt) {
 				decoder.hasFirstKeyFrame = true
+				glog.Info("Has a first key frame")
 			}
 
 			if decoder.hasFirstKeyFrame {

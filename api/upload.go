@@ -3,6 +3,7 @@ package api
 import (
 	"bytes"
 	"fmt"
+	"github.com/golang/glog"
 	"hub-video-decoder/config"
 	"net/http"
 	"os"
@@ -10,7 +11,7 @@ import (
 )
 
 const (
-	PathApiPostImage = "..."
+	PathApiPostImage = "%s/tracker/%s"
 )
 
 func PostData(path string, body []byte) error {
@@ -39,9 +40,10 @@ func PostData(path string, body []byte) error {
 }
 
 func PostImage(filename string, camUuid string, image64 []byte) {
-	err := PostData(PathApiPostImage, image64)
+	path := fmt.Sprintf(PathApiPostImage, config.GetAppConfig().Server, camUuid)
+	err := PostData(path, image64)
 	if err != nil {
-		//glog.Info(err)
+		glog.Info(err)
 	}
 	os.Remove(filename)
 }
